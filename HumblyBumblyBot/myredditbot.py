@@ -1,6 +1,7 @@
 import praw
 import config
 import requests
+import time
 import re
 from lxml import html
 
@@ -13,15 +14,31 @@ def bot_login():
 	print("Authenticated as {}".format(r.user.me()))
 	return r
 
+def main():
+	humblybumbly = bot_login()
+	while True:
+		try:
+			run_bot(humblybumbly)
+		except Exception as e:
+			err_msg = str(e)
+			wait_time = re.findall('\d+', str(e))[0]
+			print("Sleeping for {} minute(s)...".format(wait_time))
+			print(err_msg)
+			time.sleep(int(wait_time)*60)
+		
+
 def run_bot(reddit):
 	title_list = get_humble_title()[0]
 	name_list = get_humble_title()[1]
 	for comment in reddit.subreddit('humblebundles').comments(limit = 25):
 		for i in range(0, len(name_list)):
 			if name_list[i] in comment.body:
-				print("Found a Bundle!!!")
 				if comment.author != reddit.user.me():
-					comment.reply("I'm humblybumblybot! I recognize that Bundle! [Here](http://www.humblebundle.com/{}) is the link to it!".format(title_list[i].replace(" ", "-")))
+					print("Found a bumbly!!!")
+					comment.reply("I'm humblybumblybot! I recognize that Bundle! [Here is the link to it](http://www.humblebundle.com/{})!".format(title_list[i].replace(" ", "-")))
+					print("Replied to comment " + comment.id)
+	print("Sleeping for 5 minutes...")
+	time.sleep(60*5)
 
 def get_humble_title():
 	page = requests.get('http://www.humblebundle.com/')
@@ -32,5 +49,14 @@ def get_humble_title():
 	print(names)
 	return (title, names)
 
-humblybumbly = bot_login()
-run_bot(humblybumbly)
+print("Prior to import: {}".format(__name__))
+
+from myredditbot import run_bot
+
+print("About to run bot")
+
+if __name__ == '__main__':
+	main()
+
+
+

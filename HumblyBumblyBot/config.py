@@ -1,4 +1,4 @@
-username = "lucashiba"
-password = "paolmos2"
-client_id = "xkvndP-awW1EfQ"
-client_secret = "gNZP4XI6qAyV1-yhA9ma411VuGw"
+username = "humblybumblybot"
+password = "HumblyBumblyBot!"
+client_id = "kbRoD-d0egeUrg"
+client_secret = "X_MQKcqGqAirjDAnxfXUWfUo-U0"
