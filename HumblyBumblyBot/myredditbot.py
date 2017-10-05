@@ -28,19 +28,21 @@ def main():
 		
 
 def run_bot(reddit):
-	title_list = get_humble_title()[0]
-	name_list = get_humble_title()[1]
+	title_list = get_humble_games()[0]
+	name_list = get_humble_games()[1]
 	for comment in reddit.subreddit('humblebundles').comments(limit = 25):
 		for i in range(0, len(name_list)):
 			if name_list[i] in comment.body:
-				if comment.author != reddit.user.me():
+				if comment.author != reddit.user.me() and 'comment.id' not in open('comments.txt').read():
 					print("Found a bumbly!!!")
 					comment.reply("I'm humblybumblybot! I recognize that Bundle! [Here is the link to it](http://www.humblebundle.com/{})!".format(title_list[i].replace(" ", "-")))
+					with open("comments.txt", "w") as text_file:
+						text_file.write(comment.id)
 					print("Replied to comment " + comment.id)
 	print("Sleeping for 5 minutes...")
 	time.sleep(60*5)
 
-def get_humble_title():
+def get_humble_games():
 	page = requests.get('http://www.humblebundle.com/')
 	tree = html.fromstring(page.content)
 	title = tree.xpath('//div[@id="subtab-container"]/a/text()')
@@ -48,6 +50,9 @@ def get_humble_title():
 	names = [string.rstrip().split('Bundle')[0].rstrip() for string in title]
 	print(names)
 	return (title, names)
+
+def get_humble_software():
+	
 
 print("Prior to import: {}".format(__name__))
 
