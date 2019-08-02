@@ -4,6 +4,8 @@ import requests
 import time
 import re
 from lxml import html
+from bs4 import BeautifulSoup
+from rake_nltk import Rake
 
 def bot_login():
 	r = praw.Reddit(username = config.username,
@@ -20,38 +22,81 @@ def main():
 		try:
 			run_bot(humblybumbly)
 		except Exception as e:
-			err_msg = str(e)
-			wait_time = re.findall('\d+', str(e))[0]
-			print("Sleeping for {} minute(s)...".format(wait_time))
-			print(err_msg)
-			time.sleep(int(wait_time)*60)
+			parse_error(str(e))
+
+def parse_error(e):
+	err_msg = e
+	wait_time = re.findall('\d+', err_msg)[0].rstrip()
+	unit = ""
+	if "seconds" in err_msg:
+		unit = "second(s)"
+	else:
+		unit = "minute(s)"
+	print("Sleeping for {0} {1}...".format(wait_time, unit))
+	print(err_msg)
+	if unit == "minute(s)":
+		wait_time = int(wait_time)*60
+	time.sleep(wait_time)
 		
 
 def run_bot(reddit):
-	title_list = get_humble_games()[0]
-	name_list = get_humble_games()[1]
-	for comment in reddit.subreddit('humblebundles').comments(limit = 25):
+	print(get_humble_bundles())
+	for comment in reddit.subreddit('humblebundles').comments(limit = 100):
 		for i in range(0, len(name_list)):
-			if name_list[i] in comment.body:
-				if comment.author != reddit.user.me() and 'comment.id' not in open('comments.txt').read():
+			if any(name_check in comment.body.lower() for name_check in name_list[i].lower().split(' ')):
+				if comment.author != reddit.user.me() and comment.id not in open('comments.txt').read():
 					print("Found a bumbly!!!")
-					comment.reply("I'm humblybumblybot! I recognize that Bundle! [Here is the link to it](http://www.humblebundle.com/{})!".format(title_list[i].replace(" ", "-")))
-					with open("comments.txt", "w") as text_file:
-						text_file.write(comment.id)
+					urltail = ""
+					if "software" in name_list[i].lower():
+						urltail = "software/" + name_list[i].replace(" ", "-")
+					elif "book" in title_list[i].lower():
+						urltail = "books/" + name_list[i].replace(" ", "-") + "-books/"
+					else:
+						urltail = title_list[i].replace(" ", "-")
+					comment.reply("I'm humblybumblybot! I recognize that: {0}! [Here is the link to it](http://www.humblebundle.com/{1})!".format(title_list[i], urltail))
+					with open("comments.txt", "a") as text_file:
+						text_file.write(comment.id + "\n")
 					print("Replied to comment " + comment.id)
-	print("Sleeping for 5 minutes...")
-	time.sleep(60*5)
+
+def get_humble_bundles():
+	page = requests.get('http://www.humblebundle.com/')
+	tree = html.fromstring(page.content)
+	title = tree.xpath('//div[@class = "primary info-section"]/text()')
+	print(title)
+	title = [string.rstrip() for string in title]
+	names = [string.rstrip().split('Bundle')[0].rstrip() for string in title]
+	print(names)
+	return (title, names)
 
 def get_humble_games():
 	page = requests.get('http://www.humblebundle.com/')
 	tree = html.fromstring(page.content)
 	title = tree.xpath('//div[@id="subtab-container"]/a/text()')
 	title = [string.rstrip() for string in title]
+	print(title)
 	names = [string.rstrip().split('Bundle')[0].rstrip() for string in title]
 	print(names)
 	return (title, names)
 
 def get_humble_software():
+	page = requests.get('http://www.humblebundle.com/software/')
+	tree = html.fromstring(page.content)
+	title = tree.xpath('//title/text()')
+	title = [string.rstrip().split(' (')[0] for string in title]
+	print(title)
+	names = [string.rstrip().split('Bundle')[0].rstrip() for string in title]
+	print(names)
+	return (title, names)
+
+def get_humble_books():
+	page = requests.get('https://www.humblebundle.com/books/')
+	tree = html.fromstring(page.content)
+	title = tree.xpath('//div[@id="subtab-container"]/a/text()')
+	title = [string.rstrip() for string in title]
+	print(title)
+	names = [string.rstrip().split(' presented')[0] for string in title]
+	print(names)
+	return (title, names)
 	
 
 print("Prior to import: {}".format(__name__))

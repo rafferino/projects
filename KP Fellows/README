@@ -1,0 +1,56 @@
+--BLACKJACK--
+
+RULES:
+
+- The goal of blackjack is to beat the dealer's hand without going over 21.
+- Face cards are worth 10. Aces are worth 11 if your hand is currently below 10
+or 1 otherwise.
+- The player bets an amount less than or equal to his current chip amount before
+being dealt a hand.
+- The player starts with two cards, one of the dealer's cards is hidden until
+the end.
+- To 'Hit' is to ask for another card. To 'Stand' is to hold your total and end
+your turn.
+- If you go over 21 you bust, and the dealer wins regardless of the dealer's hand.
+- If you are dealt 21 from the start (Ace & 10), you got a blackjack.
+- Blackjack means you win 2x the amount of your bet.
+- Dealer will hit until his/her cards total 17 or higher.
+- The deck will only reshuffle once all cards from a previous round are consumed.
+
+
+TO PLAY:
+
+In order to play this game please navigate to the directory containing the
+'blackjack.py' script which this README file should be in. Within terminal,
+run the python script by calling
+
+$ python3 blackjack.py
+
+At which point the game should begin. A robustness test for the deck and card
+can be found in 'test.py' and can be run by calling
+
+$ python3 test.py
+
+
+DESIGN:
+
+This game was created in python almost completely using Object Oriented Programming.
+There were no fancy algorithms necessary to make this game functional. The cards,
+deck, and game itself are all classes that make the game run smoothly, and in my
+opinion, make the code much more readable. The cards contain a value and suit,
+the deck is a simple python list that is shuffled using the random library, and
+the game manager holds the a deck object, the player's chips and hand, and the
+dealer's hand.
+
+In order to make this game more playable and easy on the eyes, I found that
+giving the player a visual representation of the cards was critical. As you can
+see when playing the game, each card is represented by a 'ascii-fied' version of
+normal playing cards. A more nuanced reason why I chose to create a visual for
+the cards is to give the player an option to count cards, as is so popular for
+Blackjack. In my game, the deck is not reshuffled until the dealer deals all the
+cards, making it possible to count cards if the player was up to the task.
+
+I used python as it is my most comfortable language, but also because I have never
+done involved Object Oriented Programming in Python specifically and wanted to
+challenge myself. The only external library implemented in this code is the
+random library used to shuffle the deck.

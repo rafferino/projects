@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    paddingVerticalTop: 30,
+    paddingVertical: 30,
   },
   textInput: {
     height: 40,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   codeHighlightContainer: {
     backgroundColor: 'rgba(0,0,0,0.05)',
     borderRadius: 3,
-    paddingVerticalHorizontal: 4,
+    paddingVertical: 4,
   },
   getStartedText: {
     fontSize: 17,
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
     }),
     alignItems: 'center',
     backgroundColor: '#fbfbfb',
-    paddingVerticalVertical: 20,
+    paddingVertical: 20,
   },
   tabBarInfoText: {
     fontSize: 17,
@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   helpLink: {
-    paddingVerticalVertical: 15,
+    paddingVertical: 15,
   },
   helpLinkText: {
     fontSize: 14,
